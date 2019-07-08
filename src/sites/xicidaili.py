@@ -1,5 +1,5 @@
-from app.ip_get import IPGet, SiteResponse
-from lib.structs import SiteData, SiteResponseData
+from src.app.ip_get import IPGet, SiteResponse
+from src.lib.structs import SiteData, SiteResponseData
 
 key = 'xicidaili'
 
@@ -28,7 +28,7 @@ def parse(resp: SiteResponse):
 
 
 if __name__ == '__main__':
-    from lib.func import run_until_complete
+    from src.lib.func import run_until_complete
 
     runner = IPGet.test_crawl(key)
     run_until_complete(runner)

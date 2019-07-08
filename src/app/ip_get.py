@@ -2,13 +2,13 @@ import asyncio
 
 import aiohttp
 
-from app.ip_factory import IPFactory
-from app.main import Config, Logger
-from lib.exceptions import EmptyResponseException, RetryException, MaxRetryException
-from lib.helper import ShareInstance
-from lib.redis_lib import Redis
-from lib.func import retry
-from lib.structs import SiteData, SiteResponseData
+from src.app.ip_factory import IPFactory
+from src.app.main import Config, Logger
+from src.lib.exceptions import EmptyResponseException, RetryException, MaxRetryException
+from src.lib.helper import ShareInstance
+from src.lib.redis_lib import Redis
+from src.lib.func import retry
+from src.lib.structs import SiteData, SiteResponseData
 
 
 class SiteResponse:
@@ -57,7 +57,7 @@ class IPGet(ShareInstance):
 
     @classmethod
     async def push_to_pool(cls, ips):
-        from app.ip_checker import IPChecker
+        from src.app.ip_checker import IPChecker
         if not isinstance(ips, list):
             ips = [ips]
         with await Redis.share() as redis:
@@ -176,8 +176,8 @@ class IPGet(ShareInstance):
 
 
 if __name__ == '__main__':
-    from lib.func import run_until_complete
-    from sites import *
-    from app.ip_get import IPGet, SiteResponse
+    from src.lib.func import run_until_complete
+    from src.sites import *
+    from src.app.ip_get import IPGet, SiteResponse
 
     run_until_complete(IPGet.share().run())

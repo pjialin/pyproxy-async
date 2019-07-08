@@ -1,8 +1,8 @@
 import pytest
 
-from app.main import Config
-from app.ip_get import IPGet
-from tests.data_provider import TEST_PROXY_IPS
+from src.app.main import Config
+from src.app.ip_get import IPGet
+from src.tests.data_provider import TEST_PROXY_IPS
 
 Config.APP_ENV = Config.AppEnvType.TEST
 pytestmark = pytest.mark.asyncio

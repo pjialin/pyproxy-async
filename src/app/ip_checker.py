@@ -3,11 +3,11 @@ import datetime
 
 import aiohttp
 
-from app.main import Config, Logger
-from app.ip_saver import IPSaver
-from lib.exceptions import ValidationFailException
-from lib.redis_lib import Redis
-from lib.structs import IPData
+from src.app.main import Config, Logger
+from src.app.ip_saver import IPSaver
+from src.lib.exceptions import ValidationFailException
+from src.lib.redis_lib import Redis
+from src.lib.structs import IPData
 
 
 class IPChecker:
@@ -153,6 +153,6 @@ class IPChecker:
 
 
 if __name__ == '__main__':
-    from lib.func import run_until_complete
+    from src.lib.func import run_until_complete
 
     run_until_complete(IPChecker().run())

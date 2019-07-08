@@ -1,6 +1,6 @@
-from app.main import Config, Logger
-from lib.structs import IPData
-from lib.redis_lib import Redis
+from src.app.main import Config, Logger
+from src.lib.structs import IPData
+from src.lib.redis_lib import Redis
 
 
 class IPSaver:

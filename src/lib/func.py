@@ -7,7 +7,7 @@ def retry(num: int = 3):
     :param num:
     :return:
     """
-    from lib.exceptions import MaxRetryException, RetryException
+    from src.lib.exceptions import MaxRetryException, RetryException
     retry_num_key = '_retry_num'
 
     def decorator(func):
@@ -20,7 +20,7 @@ def retry(num: int = 3):
                 res = await func(*args, **kwargs)
             except RetryException as err:
                 retry_num -= 1
-                from app.main import Logger
+                from src.app.main import Logger
                 Logger.warning('Retry %s, remaining times %d' % (func.__name__, retry_num))
                 if retry_num > 0:
                     kwargs[retry_num_key] = retry_num

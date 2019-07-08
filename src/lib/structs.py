@@ -1,5 +1,5 @@
-from app.main import Config
-from lib.helper import DataHelper
+from src.app.main import Config
+from src.lib.helper import DataHelper
 
 
 class IPData(DataHelper):
@@ -12,7 +12,7 @@ class IPData(DataHelper):
 
     @classmethod
     def with_str(cls, ip_str: str):
-        from lib.func import str_to_ip
+        from src.lib.func import str_to_ip
         ip, port = str_to_ip(ip_str)
         return cls(ip=ip, port=port)
 

@@ -21,10 +21,8 @@ class Config:
     # Config
     REDIS = {
         'address': '127.0.0.1:6379',
-        # 'port': 6379,
         'db': 0,
         'password': None,
-        # 'decode_responses': True
     }
 
     # Redis keys
@@ -35,8 +33,6 @@ class Config:
     # REDIS_KEY_ABLE_POOL = APP_NAME + ':able_pool'
     REDIS_KEY_ABLE_HTTP = APP_NAME + ':able_http'
     REDIS_KEY_ABLE_HTTPS = APP_NAME + ':able_https'
-
-    # REDIS_PREFIX_KEY_USERS = APP_NAME + ':users:'
 
     # default
     DEFAULT_SCORE = 30
@@ -51,8 +47,6 @@ class Config:
 
     DEFAULT_REQUEST_TIME_OUT = 5
     DEFAULT_REQUEST_CHECK_TIME_OUT = 3
-
-    # REDIS_KEY_USER_TASKS = 'user_jobs'
 
     @classmethod
     def load(cls):

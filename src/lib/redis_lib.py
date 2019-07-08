@@ -1,8 +1,8 @@
 import aioredis
 from aioredis.commands import ContextRedis
 
-from app.main import Config
-from lib.helper import ShareInstance
+from src.app.main import Config
+from src.lib.helper import ShareInstance
 
 
 class Redis(ShareInstance):

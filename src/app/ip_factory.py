@@ -1,8 +1,8 @@
 import random
 
-from app.main import Config, Logger
-from lib.redis_lib import Redis
-from lib.structs import IPData
+from src.app.main import Config, Logger
+from src.lib.redis_lib import Redis
+from src.lib.structs import IPData
 
 
 class IPFactory:
@@ -32,6 +32,6 @@ class IPFactory:
 
 
 if __name__ == '__main__':
-    from lib.func import run_until_complete
+    from src.lib.func import run_until_complete
 
     run_until_complete(IPFactory.get_random_ip())
