@@ -18,6 +18,10 @@ class Config:
     # Coroutine count
     COROUTINE_COUNT_IP_CHECK = 20
 
+    WEB = {
+        'host': '0.0.0.0',
+        'port': 8008
+    }
     # Config
     REDIS = {
         'address': '127.0.0.1:6379',
@@ -60,6 +64,10 @@ class Config:
         redis = configs.get('redis')
         if redis:
             cls.REDIS.update(redis)
+
+        web = configs.get('web')
+        if redis:
+            cls.WEB.update(web)
 
         app = configs.get('app')
         if app:

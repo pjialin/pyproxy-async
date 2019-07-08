@@ -3,11 +3,11 @@ from src.lib.helper import DataHelper
 
 
 class IPData(DataHelper):
-    ip: str
-    port: int
-    delay: float
-    http: bool
-    https: bool
+    ip: str = ''
+    port: int = 0
+    delay: float = 0.0
+    http: bool = False
+    https: bool = False
     score: float = Config.DEFAULT_SCORE
 
     @classmethod

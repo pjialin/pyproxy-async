@@ -1,6 +1,10 @@
 [app]
 env = "production"
 
+[web]
+host = "127.0.0.1"
+port = 8080
+
 [redis]
 address = "redis://127.0.0.1:6379"
 db = 1
