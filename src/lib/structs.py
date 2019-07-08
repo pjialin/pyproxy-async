@@ -38,6 +38,12 @@ class SiteData(DataHelper):
     page_interval: float = 1
     headers = {}
 
+    def to_request(self, page) -> "SiteRequestData":
+        request = SiteRequestData()
+        request.url = page
+        request.use_proxy = self.use_proxy
+        return request
+
 
 class SiteResponseData(DataHelper):
     ip: str
@@ -45,3 +51,8 @@ class SiteResponseData(DataHelper):
 
     def to_str(self) -> str:
         return '%s:%d' % (self.ip, int(self.port))
+
+
+class SiteRequestData(DataHelper):
+    url: str = ''
+    use_proxy: bool = False

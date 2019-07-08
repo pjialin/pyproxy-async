@@ -8,16 +8,18 @@ from src.lib.exceptions import EmptyResponseException, RetryException, MaxRetryE
 from src.lib.helper import ShareInstance
 from src.lib.redis_lib import Redis
 from src.lib.func import retry
-from src.lib.structs import SiteData, SiteResponseData
+from src.lib.structs import SiteData, SiteResponseData, SiteRequestData
 
 
 class SiteResponse:
     text: str = ''
     url: str = ''
+    site = None
 
-    def __init__(self, text: str, url: str):
+    def __init__(self, text: str, url: str, site=None):
         self.text = text
         self.url = url
+        self.site = site
 
     def json(self):
         import json
@@ -83,7 +85,7 @@ class IPGet(ShareInstance):
             pages = site.pages if page_limit == 0 else site.pages[0:page_limit]
             for page in pages:
                 try:
-                    await self.crawl_single_page(session, page, site)
+                    await self.crawl_single_page(session, site, site.to_request(page))
                 except MaxRetryException as e:
                     Logger.warn('[get] Max retry skip, message: %s' % str(e))
                     continue
@@ -92,21 +94,21 @@ class IPGet(ShareInstance):
                         await asyncio.sleep(site.page_interval)
 
     @retry()
-    async def crawl_single_page(self, session, page, site: SiteData):
+    async def crawl_single_page(self, session, site, request: SiteRequestData):
         proxy = None
-        if site.use_proxy is True:
-            random_proxy = await IPFactory.get_random_ip(page.find('https') == 0)
+        if request.use_proxy is True:
+            random_proxy = await IPFactory.get_random_ip(request.url.find('https') == 0)
             if random_proxy:
                 proxy = random_proxy.to_http()
         try:
-            async with session.get(page, proxy=proxy) as resp:
+            async with session.get(request.url, proxy=proxy) as resp:
                 text = await resp.text()
                 if not text:
                     raise EmptyResponseException('empty text')
-                site_resp = SiteResponse(text, url=page)
-            await self.parse_site(site, site_resp)
+                site_resp = SiteResponse(text, url=request.url, site=site)
+            await self.parse_site(session, site, site_resp)
         except Exception as e:
-            Logger.error('[get] Get page %s error, message: %s' % (page, str(e)))
+            Logger.error('[get] Get page %s error, message: %s' % (request.url, str(e)))
             raise RetryException() from e
 
     @classmethod
@@ -116,22 +118,24 @@ class IPGet(ShareInstance):
         site = self._configs.get(key)
         await self.crawl_site(site=site, page_limit=page_limit)
 
-    async def parse_site(self, site: SiteData, resp: SiteResponse):
+    async def parse_site(self, session, site: SiteData, resp: SiteResponse):
         parser = self._parsers.get(site.key)
         if not parser:
             return
         try:
             result = parser(resp)
             if not self._test_model:
-                await self.save_parse_result(result)
+                await self.save_parse_result(session, site, result)
             else:
-                self.show_result(resp, result)
+                await  self.show_result(session, site, result, resp=resp)
         except Exception as e:
             Logger.error('[get] Parse error, message: %s' % str(e))
 
-    async def save_parse_result(self, result):
+    async def save_parse_result(self, session, site: SiteData, result):
         ips = []
         for item in result:
+            if isinstance(item, SiteRequestData):
+                await self.crawl_single_page(session, site, item)
             if not isinstance(item, SiteResponseData):
                 continue
             ips.append(item.to_str())
@@ -139,9 +143,11 @@ class IPGet(ShareInstance):
             Logger.info('[get] Get %d new ip' % len(ips))
             await self.push_to_pool(ips)
 
-    def show_result(self, resp: SiteResponse, result):
+    async def show_result(self, session, site, result, resp: SiteResponse):
         Logger.info('[get] Url: %s' % resp.url)
         for item in result:
+            if isinstance(item, SiteRequestData):
+                await self.crawl_single_page(session, site, item)
             if not isinstance(item, SiteResponseData):
                 continue
             Logger.info('[get] Get ip: %s' % item.to_str())
