@@ -30,13 +30,14 @@ class Config:
     }
 
     # Redis keys
-    REDIS_KEY_IP_POOL = APP_NAME + ':ip_pool'
-    REDIS_KEY_CHECK_POOL = APP_NAME + ':ip_check_pool'
+    REDIS_KEY_IP_POOL = APP_NAME + ':ip_pool'  # sort set
+    REDIS_KEY_IP_LEGACY_POOL = APP_NAME + ':ip_legacy_pool'  # sort set
+    REDIS_KEY_CHECK_POOL = APP_NAME + ':ip_check_pool'  # list
     REDIS_KEY_CHECKED_POOL = APP_NAME + ':ip_checked_pool'
-    REDIS_KEY_NET_DELAY = APP_NAME + ':ip_net_%d'
+    REDIS_KEY_NET_DELAY = APP_NAME + ':ip_net_%d'  # set
     # REDIS_KEY_ABLE_POOL = APP_NAME + ':able_pool'
-    REDIS_KEY_ABLE_HTTP = APP_NAME + ':able_http'
-    REDIS_KEY_ABLE_HTTPS = APP_NAME + ':able_https'
+    REDIS_KEY_ABLE_HTTP = APP_NAME + ':able_http'  # set
+    REDIS_KEY_ABLE_HTTPS = APP_NAME + ':able_https'  # set
 
     # default
     DEFAULT_SCORE = 30
@@ -45,9 +46,12 @@ class Config:
     DEFAULT_MAX_SCORE = 100
     DEFAULT_MINI_SCORE = 0
 
+    DEFAULT_LEGACY_IP_RETAINED_TIME = 60 * 60 * 12  # 无效 ip 保留时间 | 秒
+
     DEFAULT_CHECK_INTERVAL = 60 * 10  # ip 检查间隔 | 秒
     DEFAULT_CHECK_CLEAN_IP_INTERVAL = 10  # ip 清理间隔 | 秒
     DEFAULT_CRAWL_SITES_INTERVAL = 60 * 60  # ip 抓取间隔 | 秒
+    DEFAULT_LEGACY_IP_CHECK_INTERVAL = 10  # 无效 ip 检测时间 | 秒
 
     DEFAULT_REQUEST_TIME_OUT = 5
     DEFAULT_REQUEST_CHECK_TIME_OUT = 3

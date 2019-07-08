@@ -1,4 +1,5 @@
 from src.app.main import Config, Logger
+from src.lib.func import time_int
 from src.lib.structs import IPData
 from src.lib.redis_lib import Redis
 
@@ -48,6 +49,13 @@ class IPSaver:
             for i in [100, 500, 1000, 2000]:
                 await redis.srem(Config.REDIS_KEY_NET_DELAY % i, *ip_str)
             await redis.zrem(Config.REDIS_KEY_IP_POOL, *ip_str)
+            # save to legacy pool
+            members = []
+            time = time_int()
+            for ip in ip_str:
+                members.append(time)
+                members.append(ip)
+            await redis.zadd(Config.REDIS_KEY_IP_LEGACY_POOL, *members)
 
     def get_delay_key(self, delay: float) -> str:
         delay_key = None

@@ -7,7 +7,7 @@ from src.app.main import Config, Logger
 from src.lib.exceptions import EmptyResponseException, RetryException, MaxRetryException
 from src.lib.helper import ShareInstance
 from src.lib.redis_lib import Redis
-from src.lib.func import retry
+from src.lib.func import retry, time_int
 from src.lib.structs import SiteData, SiteResponseData, SiteRequestData
 
 
@@ -41,6 +41,7 @@ class IPGet(ShareInstance):
     async def run(self):
         runner = self.crawl_task
         tasks = [runner()]
+        tasks.append(self.check_legacy_task())
         await asyncio.ensure_future(asyncio.wait(tasks))
 
     async def crawl_task(self):
@@ -51,11 +52,26 @@ class IPGet(ShareInstance):
                 break
             await asyncio.sleep(Config.DEFAULT_CRAWL_SITES_INTERVAL)
 
+    async def check_legacy_task(self):
+        while True:
+            Logger.debug('[get] check legacy task loop')
+            await self.remove_legacy_ip()
+            if Config.APP_ENV == Config.AppEnvType.TEST:
+                break
+            await asyncio.sleep(Config.DEFAULT_LEGACY_IP_CHECK_INTERVAL)
+
     async def start_crawl(self):
         for key, site in self._configs.items():
             assert isinstance(site, SiteData)
             if site.enabled:
                 await self.crawl_site(site)
+
+    async def remove_legacy_ip(self):
+        with await Redis.share() as redis:
+            count = await redis.zremrangebyscore(Config.REDIS_KEY_IP_LEGACY_POOL, 0,
+                                                 time_int() - Config.DEFAULT_LEGACY_IP_RETAINED_TIME)
+            Logger.info('[check] remove legacy ip count %d' % count)
+            return count
 
     @classmethod
     async def push_to_pool(cls, ips):
@@ -66,6 +82,9 @@ class IPGet(ShareInstance):
             needs_ip = []
             for ip in ips:
                 exists = await redis.zscore(Config.REDIS_KEY_IP_POOL, ip)
+                if exists is not None:
+                    continue
+                exists = await redis.zscore(Config.REDIS_KEY_IP_LEGACY_POOL, ip)
                 if exists is not None:
                     continue
                 await redis.zadd(Config.REDIS_KEY_IP_POOL, Config.DEFAULT_SCORE, ip)

@@ -23,3 +23,7 @@ async def get_ip(request):
         # 'https': ip.https,
         'http': ip.to_http(),
     })
+
+
+if __name__ == '__main__':
+    Web().start()
