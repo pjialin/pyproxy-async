@@ -23,7 +23,7 @@ idna==2.8
 idna-ssl==1.1.0
 importlib-metadata==0.18
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.10.1
 lxml==4.3.0
 MarkupSafe==1.1.0
 more-itertools==7.1.0
@@ -51,7 +51,7 @@ soupsieve==1.7.2
 toml==0.10.0
 tqdm==4.29.1
 typing-extensions==3.7.4
-urllib3==1.24.1
+urllib3==1.24.2
 w3lib==1.20.0
 wcwidth==0.1.7
 websockets==7.0
