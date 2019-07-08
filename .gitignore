@@ -1,0 +1,5 @@
+.idea
+.DS_Store
+venv
+__pycache__
+config.toml
