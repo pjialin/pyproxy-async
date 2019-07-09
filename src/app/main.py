@@ -32,6 +32,7 @@ class Config:
     # Redis keys
     REDIS_KEY_IP_POOL = APP_NAME + ':ip_pool'  # sort set
     REDIS_KEY_IP_LEGACY_POOL = APP_NAME + ':ip_legacy_pool'  # sort set
+    REDIS_KEY_TASK_POOL = APP_NAME + ':task_pool'  # sort set
     REDIS_KEY_CHECK_POOL = APP_NAME + ':ip_check_pool'  # list
     REDIS_KEY_CHECKED_POOL = APP_NAME + ':ip_checked_pool'
     REDIS_KEY_NET_DELAY = APP_NAME + ':ip_net_%d'  # set

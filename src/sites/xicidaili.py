@@ -9,6 +9,7 @@ def config():
     site = SiteData()
     site.name = '西刺代理'
     site.enabled = True
+    site.use_proxy = True
     site.pages = ['http://www.xicidaili.com/{}/{}'.format(i, ii) for i in ['nn', 'nt', 'wn', 'wt'] for ii in
                   range(1, 5)]
     return site

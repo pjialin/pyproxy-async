@@ -63,14 +63,22 @@ class IPGet(ShareInstance):
     async def start_crawl(self):
         for key, site in self._configs.items():
             assert isinstance(site, SiteData)
-            if site.enabled:
-                await self.crawl_site(site)
+            if not site.enabled:
+                continue
+            with await Redis.share() as redis:
+                score = await redis.zscore(Config.REDIS_KEY_TASK_POOL, site.key)
+                if score and score > (time_int() - Config.DEFAULT_CRAWL_SITES_INTERVAL):
+                    continue
+                else:
+                    await redis.zadd(Config.REDIS_KEY_TASK_POOL, time_int(), site.key)
+            await self.crawl_site(site)
 
     async def remove_legacy_ip(self):
         with await Redis.share() as redis:
             count = await redis.zremrangebyscore(Config.REDIS_KEY_IP_LEGACY_POOL, 0,
                                                  time_int() - Config.DEFAULT_LEGACY_IP_RETAINED_TIME)
-            Logger.info('[check] remove legacy ip count %d' % count)
+            if count:
+                Logger.info('[check] remove legacy ip count %d' % count)
             return count
 
     @classmethod
