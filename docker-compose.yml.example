@@ -1,0 +1,13 @@
+version: "3.4"
+
+services:
+  pyproxy:
+    build: .
+    volumes:
+      - ./config.toml:/code/config.toml
+      - pyproxy-data:/data
+    ports:
+      - 8080:8080
+
+volumes:
+  pyproxy-data:

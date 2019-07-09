@@ -5,3 +5,4 @@ __pycache__
 config.toml
 *.ip.txt
 data/dumped/*
+docker-compose.yml
