@@ -25,13 +25,30 @@ cd pyproxy-async
 ```
 pip install -r requirements.txt 
 ```
+
 3. 完善配置文件
 ```
 cp config.toml.example config.toml
 ```
+
 4. 启动
 ```
 python main.py
+```
+### Docker 使用
+1. 拉取镜像
+```
+docker pull pjialin/pyproxy-async:latest
+```
+
+2. 下载配置文件
+```
+curl -o config.toml https://raw.githubusercontent.com/pjialin/pyproxy-async/master/config.toml.example
+```
+
+3. 启动
+```
+docker run -d -v $(PWD)/config.toml:/code/config.toml -v pyproxy-data:/code/data --name pyproxy pjialin/pyproxy-async:latest
 ```
 
 ## Web Api
@@ -49,6 +66,7 @@ curl http://127.0.0.1:8080/get_ip?https=1
 127.0.0.1:80
 127.0.0.1:8080
 ```
+
 2. 加载到 IP 池中
 ```
 python load.py [file_name]  # 默认加载所有 *.ip.txt 文件
