@@ -38,9 +38,12 @@ class IPChecker:
             await asyncio.sleep(Config.DEFAULT_CHECK_CLEAN_IP_INTERVAL)
 
     async def recheck_ip_task(self):
+        key = 'recheck_ip'
         while True:
             Logger.debug('[check] recheck ip task loop')
-            await self.resend_check_ip()
+            if not await Redis.last_time_check(key, Config.DEFAULT_CHECK_INTERVAL):
+                await Redis.save_last_time(key)
+                await self.resend_check_ip()
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_CHECK_INTERVAL)
