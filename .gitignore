@@ -4,3 +4,4 @@ venv
 __pycache__
 config.toml
 *.ip.txt
+data/dumped/*

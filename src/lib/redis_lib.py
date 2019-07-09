@@ -3,6 +3,7 @@ from aioredis.commands import ContextRedis
 
 from src.app.main import Config
 from src.lib.helper import ShareInstance
+from src.lib.func import time_int
 
 
 class Redis(ShareInstance):
@@ -22,6 +23,21 @@ class Redis(ShareInstance):
         self = super().share()
         await self.init_pool()
         return await self._pool
+
+    @classmethod
+    async def last_time_check(cls, key: str, interval: float) -> bool:
+        with await cls.share() as redis:
+            score = await redis.zscore(Config.REDIS_KEY_TASK_POOL, key)
+            if score and score > (time_int() - interval):
+                return True
+        return False
+
+    @classmethod
+    async def save_last_time(cls, key: str) -> bool:
+        from src.lib.func import time_int
+        with await cls.share() as redis:
+            await redis.zadd(Config.REDIS_KEY_TASK_POOL, time_int(), key)
+        return True
 
 
 if __name__ == '__main__':

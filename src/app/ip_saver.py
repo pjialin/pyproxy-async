@@ -57,6 +57,19 @@ class IPSaver:
                 members.append(ip)
             await redis.zadd(Config.REDIS_KEY_IP_LEGACY_POOL, *members)
 
+    async def dump_to_file(self):
+        with await Redis.share() as redis:
+            members = await redis.zrangebyscore(Config.REDIS_KEY_IP_POOL, Config.DEFAULT_MINI_SCORE,
+                                                Config.DEFAULT_MAX_SCORE + Config.DEFAULT_INC_SCORE)
+            if members:
+                members = [m.decode() for m in members]
+                from datetime import datetime
+                file_name = 'ip_pool_%s.ip.txt' % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                with open(Config.DUMPED_DIR + file_name, 'w') as f:
+                    f.write('\n'.join(members))
+                Logger.info('Dump %d ip to file %s' % (len(members, file_name)))
+        return True
+
     def get_delay_key(self, delay: float) -> str:
         delay_key = None
         if delay <= 0.1:

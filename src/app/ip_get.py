@@ -42,6 +42,8 @@ class IPGet(ShareInstance):
         runner = self.crawl_task
         tasks = [runner()]
         tasks.append(self.check_legacy_task())
+        if Config.AUTO_DUMP:
+            tasks.append(self.check_dump_task())
         await asyncio.ensure_future(asyncio.wait(tasks))
 
     async def crawl_task(self):
@@ -60,18 +62,27 @@ class IPGet(ShareInstance):
                 break
             await asyncio.sleep(Config.DEFAULT_LEGACY_IP_CHECK_INTERVAL)
 
+    async def check_dump_task(self):
+        from src.app.ip_saver import IPSaver
+        key = 'dump_to_file'
+        while True:
+            Logger.debug('[get] dump task loop')
+            if not await Redis.last_time_check(key, Config.DEFAULT_DUMP_IP_INTERVAL):
+                await Redis.save_last_time(key)
+                await IPSaver().dump_to_file()
+            if Config.APP_ENV == Config.AppEnvType.TEST:
+                break
+            await asyncio.sleep(Config.DEFAULT_DUMP_IP_INTERVAL)
+
     async def start_crawl(self):
         for key, site in self._configs.items():
             assert isinstance(site, SiteData)
             if not site.enabled:
                 continue
-            with await Redis.share() as redis:
-                score = await redis.zscore(Config.REDIS_KEY_TASK_POOL, site.key)
-                if score and score > (time_int() - Config.DEFAULT_CRAWL_SITES_INTERVAL):
-                    continue
-                else:
-                    await redis.zadd(Config.REDIS_KEY_TASK_POOL, time_int(), site.key)
-            await self.crawl_site(site)
+            key = 'check_site_%s' % site.key
+            if not await Redis.last_time_check(key, Config.DEFAULT_DUMP_IP_INTERVAL):
+                await Redis.save_last_time(key)
+                await self.crawl_site(site)
 
     async def remove_legacy_ip(self):
         with await Redis.share() as redis:

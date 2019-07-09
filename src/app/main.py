@@ -13,7 +13,11 @@ class Config:
     LOADED = False
 
     PROJECT_DIR = os.path.abspath(__file__ + '/../../../') + '/'
+    DUMPED_DIR = PROJECT_DIR + 'data/dumped/'
     CONFIG_FILE = PROJECT_DIR + 'config.toml'
+
+    # Basic
+    AUTO_DUMP = True
 
     # Coroutine count
     COROUTINE_COUNT_IP_CHECK = 20
@@ -53,6 +57,7 @@ class Config:
     DEFAULT_CHECK_CLEAN_IP_INTERVAL = 10  # ip 清理间隔 | 秒
     DEFAULT_CRAWL_SITES_INTERVAL = 60 * 60  # ip 抓取间隔 | 秒
     DEFAULT_LEGACY_IP_CHECK_INTERVAL = 10  # 无效 ip 检测时间 | 秒
+    DEFAULT_DUMP_IP_INTERVAL = 60 * 60 * 12  # 保存 IP 间隔 | 秒
 
     DEFAULT_REQUEST_TIME_OUT = 5
     DEFAULT_REQUEST_CHECK_TIME_OUT = 3
