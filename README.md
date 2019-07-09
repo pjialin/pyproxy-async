@@ -10,7 +10,7 @@
 * Web Api 接口支持
 
 ## TODO
-- [ ] Docker Support
+- [x] Docker Support
 - [ ] TSDB Support
 - [ ] More api Support
 

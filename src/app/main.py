@@ -91,7 +91,8 @@ if not Config.LOADED:
 # Logger
 def set_up_logger():
     logger = logging.getLogger(Config.APP_NAME)
-    logger.setLevel('DEBUG' if Config.APP_ENV == Config.AppEnvType.DEV else 'ERROR')
+
+    logger.setLevel(logging.DEBUG if Config.APP_ENV == Config.AppEnvType.DEV else logging.INFO)
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
     handler.setFormatter(formatter)
