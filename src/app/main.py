@@ -53,6 +53,7 @@ class Config:
 
     DEFAULT_LEGACY_IP_RETAINED_TIME = 60 * 60 * 12  # 无效 ip 保留时间 | 秒
 
+    DEFAULT_LOOP_INTERVAL = 5  # 任务 Loop 间隔 | 秒
     DEFAULT_CHECK_INTERVAL = 60 * 10  # ip 检查间隔 | 秒
     DEFAULT_CHECK_CLEAN_IP_INTERVAL = 10  # ip 清理间隔 | 秒
     DEFAULT_CRAWL_SITES_INTERVAL = 60 * 60  # ip 抓取间隔 | 秒

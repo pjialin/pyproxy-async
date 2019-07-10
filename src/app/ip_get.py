@@ -52,7 +52,7 @@ class IPGet(ShareInstance):
             await self.start_crawl()
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
-            await asyncio.sleep(Config.DEFAULT_CRAWL_SITES_INTERVAL)
+            await asyncio.sleep(Config.DEFAULT_LOOP_INTERVAL)
 
     async def check_legacy_task(self):
         while True:
@@ -80,7 +80,7 @@ class IPGet(ShareInstance):
             if not site.enabled:
                 continue
             key = 'check_site_%s' % site.key
-            if not await Redis.last_time_check(key, Config.DEFAULT_DUMP_IP_INTERVAL):
+            if not await Redis.last_time_check(key, Config.DEFAULT_CRAWL_SITES_INTERVAL):
                 await Redis.save_last_time(key)
                 await self.crawl_site(site)
 
