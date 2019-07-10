@@ -118,7 +118,7 @@ class IPChecker:
         with await Redis.share() as redis:
             check_pool_len = await redis.llen(Config.REDIS_KEY_CHECK_POOL)
             ip_pool_len = await redis.zcount(Config.REDIS_KEY_IP_POOL)
-            if check_pool_len >= ip_pool_len:  # 如果待检测的数量大于 ip 池中的数量，就不推了
+            if check_pool_len >= ip_pool_len * Config.RE_PUSH_TO_CHECK_POOL_RATE:  # 如果待检测的数量大于 ip 池中的数量，就不推了
                 return
             for i in range(Config.DEFAULT_MINI_SCORE + 1, Config.DEFAULT_MAX_SCORE + Config.DEFAULT_INC_SCORE,
                            Config.DEFAULT_INC_SCORE):
