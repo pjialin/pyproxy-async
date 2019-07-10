@@ -1,7 +1,7 @@
 from src.app.ip_get import IPGet, SiteResponse
 from src.lib.structs import SiteData, SiteResponseData
 
-key = 'goubanjia'
+key = '76fx'
 
 
 @IPGet.config(key)
