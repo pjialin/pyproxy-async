@@ -11,6 +11,7 @@
 
 ## TODO
 - [x] Docker Support
+- [ ] Custom check rule Support 
 - [ ] TSDB Support
 - [ ] More api Support
 
@@ -56,11 +57,13 @@ docker run -d -v $(PWD)/config.toml:/code/config.toml -v pyproxy-data:/code/data
 ```
 # curl http://127.0.0.1:8080/get_ip  
 {"ip":"213.6.45.18","port":"39252","http":"http://213.6.45.18:39252"}
+
 # 支持过滤条件 https，如
 curl http://127.0.0.1:8080/get_ip?https=1
 ```
 
-### 从文件中加载已存在的 IP 列表
+### 从文件或 Url 中加载已存在的 IP 列表
+**文件**
 1. 将文件命名为 `*.ip.txt`，如 `new.ip.txt`，并放在根目录下，文件格式为 `host:port`，如 
 ```
 127.0.0.1:80
@@ -70,6 +73,10 @@ curl http://127.0.0.1:8080/get_ip?https=1
 2. 加载到 IP 池中
 ```
 python load.py [file_name]  # 默认加载所有 *.ip.txt 文件
+```
+**从 Url 中加载**
+```
+python load.py url # 如 python load.py https://ser.com/ip  支持任意文本，程序通过正则进行匹配
 ```
 
 ### 添加抓取服务

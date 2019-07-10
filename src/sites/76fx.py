@@ -15,7 +15,7 @@ def config():
 @IPGet.parse(key)
 def parse(resp: SiteResponse):
     import re
-    ips = re.findall('(?:\d{1,3}\.){3}\d{1,3}:\d+', resp.text)
+    ips = re.findall(r'(?:\d{1,3}\.){3}\d{1,3}:\d+', resp.text)
     for ip in ips:
         try:
             item = ip.split(':')
