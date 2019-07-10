@@ -83,5 +83,8 @@ python load.py url # 如 python load.py https://ser.com/ip  支持任意文本�
 增加新的 IP 抓取服务非常简单，只需要定义好要抓取的页面和对应的解析器，框架会自动加载并进行抓取。
 在 `src/sites` 目录中提供了一个示例文件，[site.py.example](https://github.com/pjialin/pyproxy-async/blob/master/src/sites/site.py.example)，供参考 
 
+### 集群支持
+目前支持使用同一个 Redis 地址，实现集群 IP 检测以及抓取
+
 ## License
 [Apache License 2.0](https://github.com/pjialin/pyproxy-async/blob/master/LICENSE)
