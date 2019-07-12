@@ -88,6 +88,12 @@ class Config:
         app = configs.get('app')
         if app:
             cls.APP_ENV = app.get('env', cls.APP_ENV)
+            for key, val in app.items():
+                if key in ['env']:
+                    continue
+                upper_key = key.upper()
+                if getattr(cls, upper_key, False):
+                    setattr(cls, upper_key, val)
 
         rules = configs.get('rule')
         if rules:
