@@ -16,13 +16,16 @@ class Web(Process):
 
 @app.route('/get_ip')
 async def get_ip(request):
-    ip = await IPFactory.get_random_ip(bool(request.raw_args.get('https', False)))
-    return json({
-        'ip': ip.ip,
-        'port': ip.port,
-        # 'https': ip.https,
-        'http': ip.to_http(),
-    })
+    is_https = bool(request.raw_args.get('https', False))
+    rule = request.raw_args.get('rule')
+    ip = await IPFactory.get_random_ip(https=is_https, rule=rule)
+    if ip:
+        return json({'ip': ip.ip, 'port': ip.port,
+                     # 'https': ip.https,
+                     'http': ip.to_http(),
+                     })
+    else:
+        return json({'msg': 'The ip pool is empty. '})
 
 
 if __name__ == '__main__':
