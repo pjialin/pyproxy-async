@@ -7,8 +7,7 @@ from src.app.main import Config, Logger
 from src.app.ip_saver import IPSaver
 from src.lib.exceptions import ValidationFailException
 from src.lib.redis_lib import Redis
-from src.lib.structs import IPData
-
+from src.lib.structs import IPData, RuleData
 
 class IPChecker:
     NORMAL_CHECK_URL = 'http://httpbin.org/get'
@@ -58,7 +57,10 @@ class IPChecker:
                 timeout=aiohttp.ClientTimeout(Config.DEFAULT_REQUEST_CHECK_TIME_OUT)) as session:
             ip = await self.http_check(ip, session)
             ip = await self.https_check(ip, session)
-            Logger.info('[check] Check result %s http %s https %s', ip.to_str(), ip.http, ip.https)
+            if ip.http:
+                ip = await self.rules_check(ip, session)
+            Logger.info('[check] Check result %s http %s https %s %s', ip.to_str(), ip.http, ip.https,
+                        " ".join(["%s %s" % (k, r) for k, r in ip.rules.items()]))
         await IPSaver().save_ip(ip)
         # await self.push_to_checked_pool(ip.to_str())
 
@@ -77,7 +79,7 @@ class IPChecker:
                 time_spend = datetime.datetime.now() - time_spend
                 ip.delay = time_spend.total_seconds()
                 ip.http = True
-        except Exception as e:
+        except Exception:
             ip.http = False
 
         return ip
@@ -93,8 +95,29 @@ class IPChecker:
                 if not result.get('origin'):
                     raise ValidationFailException()
                 ip.https = True
-        except Exception as e:
+        except Exception:
             ip.https = False
+
+        return ip
+
+    async def rules_check(self, ip: IPData, session) -> IPData:
+        """
+        通过规则进行检测
+        :return:
+        """
+        for rule in Config.RULES:
+            assert isinstance(rule, RuleData), 'Error rule format'
+            if not rule.enable:
+                continue
+            try:
+                async with session.get(rule.url, proxy=ip.to_http()) as resp:
+                    result = await resp.text()
+                    assert isinstance(result, str)
+                    if rule.contains and result.find(rule.contains) < 0:
+                        raise ValidationFailException()
+                    ip.rules[rule.key] = True
+            except Exception:
+                ip.rules[rule.key] = False
 
         return ip
 

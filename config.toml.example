@@ -9,3 +9,9 @@ port = 8080
 address = "redis://127.0.0.1:6379"
 db = 1
 password = ""
+
+# 通过规则进行检测
+# [rule.google]
+# key = "google"
+# url = "https://google.com/test"
+# contains = "That’s all we know"  # 验证返回内容

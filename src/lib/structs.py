@@ -8,6 +8,7 @@ class IPData(DataHelper):
     delay: float = 0.0
     http: bool = False
     https: bool = False
+    rules: dict = {}
     score: float = Config.DEFAULT_SCORE
 
     @classmethod
@@ -56,3 +57,13 @@ class SiteResponseData(DataHelper):
 class SiteRequestData(DataHelper):
     url: str = ''
     use_proxy: bool = False
+
+
+class RuleData(DataHelper):
+    enable: bool = True
+    url: str = ''
+    key: str = ''
+    contains: str = ''
+
+    def verify(self) -> bool:
+        return self.url and self.key

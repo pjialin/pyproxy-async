@@ -18,11 +18,19 @@ class IPSaver:
             else:
                 await redis.srem(Config.REDIS_KEY_ABLE_HTTPS, ip.to_str())
 
+            # Rules check
+            for key, res in ip.rules.items():
+                if res is True:
+                    await redis.sadd(Config.REDIS_KEY_ABLE_RULES % key, ip.to_str())
+                else:
+                    await redis.srem(Config.REDIS_KEY_ABLE_RULES % key, ip.to_str())
+
             # Delay pool
             if ip.available():
                 delay_key = self.get_delay_key(ip.delay)
                 if delay_key:
                     await redis.sadd(delay_key, ip.to_str())
+
         if ip.available():
             await self.available_call(ip)
         else:

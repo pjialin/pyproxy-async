@@ -32,6 +32,7 @@ class Config:
         'db': 0,
         'password': None,
     }
+    RULES = []
 
     # Redis keys
     REDIS_KEY_IP_POOL = APP_NAME + ':ip_pool'  # sort set
@@ -43,6 +44,7 @@ class Config:
     # REDIS_KEY_ABLE_POOL = APP_NAME + ':able_pool'
     REDIS_KEY_ABLE_HTTP = APP_NAME + ':able_http'  # set
     REDIS_KEY_ABLE_HTTPS = APP_NAME + ':able_https'  # set
+    REDIS_KEY_ABLE_RULES = APP_NAME + ':able_rules_%s'  # rules
 
     # default
     DEFAULT_SCORE = 30
@@ -86,6 +88,14 @@ class Config:
         app = configs.get('app')
         if app:
             cls.APP_ENV = app.get('env', cls.APP_ENV)
+
+        rules = configs.get('rule')
+        if rules:
+            from src.lib.structs import RuleData
+            for _, rule in rules.items():
+                r_data = RuleData(**rule)
+                if r_data.verify():
+                    cls.RULES.append(r_data)
 
 
 if not Config.LOADED:
