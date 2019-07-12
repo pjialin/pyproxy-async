@@ -105,6 +105,7 @@ class IPChecker:
         通过规则进行检测
         :return:
         """
+        rules = {}
         for rule in Config.RULES:
             assert isinstance(rule, RuleData), 'Error rule format'
             if not rule.enable:
@@ -115,10 +116,10 @@ class IPChecker:
                     assert isinstance(result, str)
                     if rule.contains and result.find(rule.contains) < 0:
                         raise ValidationFailException()
-                    ip.rules[rule.key] = True
+                    rules[rule.key] = True
             except Exception:
-                ip.rules[rule.key] = False
-
+                rules[rule.key] = False
+        ip.rules = rules
         return ip
 
     async def remove_low_score_ip(self):

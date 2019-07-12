@@ -29,20 +29,19 @@ class Dict(dict):
 
 
 class DataHelper:
-    __origin: dict
+    __origin: dict = {}
     __mappers: dict = {}
 
     def __init__(self, data: dict = {}, **kwargs):
-        data.update(kwargs)
+        new_data = data.copy()
+        new_data.update(kwargs)
         self.__generate_mappers()
-        self.__origin = data
-        for key, val in data.items():
+        self.__origin = new_data
+        for key, val in new_data.items():
             if str(key) in self.__mappers:
                 self.__dict__[self.__mappers[str(key)]] = val
             elif key in self.__annotations__:
                 self.__dict__[key] = val
-        if getattr(self, '_after', None):
-            self._after()
 
     def __generate_mappers(self):
         for key, val in self.__annotations__.items():
@@ -66,4 +65,3 @@ class DataHelper:
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
-
