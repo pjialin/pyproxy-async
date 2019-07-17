@@ -14,10 +14,12 @@ class Config:
 
     PROJECT_DIR = os.path.abspath(__file__ + '/../../../') + '/'
     DUMPED_DIR = PROJECT_DIR + 'data/dumped/'
+    PROMETHEUS_DIR = PROJECT_DIR + 'data/prometheus/'
     CONFIG_FILE = PROJECT_DIR + 'config.toml'
 
     # Basic
     AUTO_DUMP = True
+    PROMETHEUS_ABLE = False
 
     # Coroutine count
     COROUTINE_COUNT_IP_CHECK = 20
@@ -77,31 +79,52 @@ class Config:
         import toml
         configs = toml.load(cls.CONFIG_FILE)
 
-        redis = configs.get('redis')
-        if redis:
-            cls.REDIS.update(redis)
+        redis = configs.get('redis', {})
+        cls.REDIS.update(redis)
 
-        web = configs.get('web')
-        if redis:
-            cls.WEB.update(web)
+        web = configs.get('web', {})
+        cls.WEB.update(web)
 
-        app = configs.get('app')
-        if app:
-            cls.APP_ENV = app.get('env', cls.APP_ENV)
-            for key, val in app.items():
-                if key in ['env']:
-                    continue
-                upper_key = key.upper()
-                if getattr(cls, upper_key, False):
-                    setattr(cls, upper_key, val)
+        app = configs.get('app', {})
+        cls.load_app(app)
 
-        rules = configs.get('rule')
-        if rules:
-            from src.lib.structs import RuleData
-            for _, rule in rules.items():
-                r_data = RuleData(**rule)
-                if r_data.verify():
-                    cls.RULES.append(r_data)
+        rules = configs.get('rule', {})
+        cls.load_rules(rules)
+
+        if cls.PROMETHEUS_ABLE:
+            cls.clean_prometheus_dir()
+
+    @classmethod
+    def load_app(cls, app):
+        cls.APP_ENV = app.get('env', cls.APP_ENV)
+        for key, val in app.items():
+            if key in ['env']:
+                continue
+            upper_key = key.upper()
+            if getattr(cls, upper_key, None) is not None:
+                setattr(cls, upper_key, val)
+
+    @classmethod
+    def load_rules(cls, rules):
+        from src.lib.structs import RuleData
+        for _, rule in rules.items():
+            r_data = RuleData(**rule)
+            if r_data.verify():
+                cls.RULES.append(r_data)
+
+    @classmethod
+    def clean_prometheus_dir(cls):
+        path = cls.PROMETHEUS_DIR
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            return
+        for file in os.listdir(path):
+            file_path = os.path.join(path, file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                pass
 
 
 if not Config.LOADED:
