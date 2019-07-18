@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from sanic import Sanic
-from sanic.response import json
+from sanic.response import json, text
 from multiprocessing import Process
 
 from src.app.ip_factory import IPFactory
 from src.app.main import Config
+from src.app.prometheus import Prometheus
 
 app = Sanic()
 
@@ -28,5 +31,26 @@ async def get_ip(request):
         return json({'msg': 'The ip pool is empty. '})
 
 
+@app.route('/metrics')
+async def metrics(request):
+    from src.app.prometheus import Prometheus
+    data = Prometheus.get_data()
+    return text(data)
+
+
+@app.middleware('request')
+async def print_on_request(request):
+    request['start_time'] = datetime.now()
+
+
+@app.middleware('response')
+async def print_on_response(request, response):
+    spend_time = datetime.now() - request['start_time']
+    Prometheus.up_web_api_counter(request.path, request.method, code=response.status,
+                                  delay=spend_time.total_seconds())
+
+
 if __name__ == '__main__':
-    Web().start()
+    web = Web()
+    web.start()
+    web.join()

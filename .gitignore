@@ -5,4 +5,5 @@ __pycache__
 config.toml
 *.ip.txt
 data/dumped/*
+data/prometheus/*
 docker-compose.yml

@@ -5,6 +5,7 @@ import aiohttp
 
 from src.app.main import Config, Logger
 from src.app.ip_saver import IPSaver
+from src.app.prometheus import Prometheus
 from src.lib.exceptions import ValidationFailException
 from src.lib.redis_lib import Redis
 from src.lib.structs import IPData, RuleData
@@ -52,6 +53,7 @@ class IPChecker:
             ip_str = await redis.blpop(Config.REDIS_KEY_CHECK_POOL)
         ip_str = ip_str[1].decode()
         Logger.info('[check] got ip %s' % ip_str)
+        Prometheus.IP_CHECK_TOTAL.inc(1)
         ip = IPData.with_str(ip_str)
         async with aiohttp.ClientSession(
                 timeout=aiohttp.ClientTimeout(Config.DEFAULT_REQUEST_CHECK_TIME_OUT)) as session:

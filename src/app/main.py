@@ -42,7 +42,7 @@ class Config:
     REDIS_KEY_TASK_POOL = APP_NAME + ':task_pool'  # sort set
     REDIS_KEY_CHECK_POOL = APP_NAME + ':ip_check_pool'  # list
     REDIS_KEY_CHECKED_POOL = APP_NAME + ':ip_checked_pool'
-    REDIS_KEY_NET_DELAY = APP_NAME + ':ip_net_%d'  # set
+    REDIS_KEY_NET_DELAY = APP_NAME + ':ip_net_%d'  # set   100 500 1000 2000
     # REDIS_KEY_ABLE_POOL = APP_NAME + ':able_pool'
     REDIS_KEY_ABLE_HTTP = APP_NAME + ':able_http'  # set
     REDIS_KEY_ABLE_HTTPS = APP_NAME + ':able_https'  # set
@@ -63,6 +63,7 @@ class Config:
     DEFAULT_CRAWL_SITES_INTERVAL = 60 * 60  # ip 抓取间隔 | 秒
     DEFAULT_LEGACY_IP_CHECK_INTERVAL = 10  # 无效 ip 检测时间 | 秒
     DEFAULT_DUMP_IP_INTERVAL = 60 * 60 * 12  # 保存 IP 间隔 | 秒
+    DEFAULT_STATS_CHECK_INTERVAL = 10  # IP 数据统计间隔
 
     DEFAULT_REQUEST_TIME_OUT = 5
     DEFAULT_REQUEST_CHECK_TIME_OUT = 3
