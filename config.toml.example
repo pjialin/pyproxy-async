@@ -1,5 +1,7 @@
 [app]
 env = "production"
+coroutine_count_ip_check = 20 # IP 检测开启的协程数量
+prometheus_able = false
 
 [web]
 host = "0.0.0.0"

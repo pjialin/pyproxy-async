@@ -11,8 +11,8 @@
 
 ## TODO
 - [x] Docker Support
-- [ ] Custom check rule Support 
-- [ ] TSDB Support
+- [x] Custom check rule Support 
+- [x] TSDB Support (Prometheus has been supported)
 - [ ] More api Support
 
 ## Usage
