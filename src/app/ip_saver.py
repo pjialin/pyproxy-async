@@ -56,6 +56,8 @@ class IPSaver:
             await redis.srem(Config.REDIS_KEY_ABLE_HTTPS, *ip_str)
             for i in [100, 500, 1000, 2000]:
                 await redis.srem(Config.REDIS_KEY_NET_DELAY % i, *ip_str)
+            for rule in Config.RULES:  # 从规则中删除
+                await redis.srem(Config.REDIS_KEY_ABLE_RULES % rule.key, *ip_str)
             await redis.zrem(Config.REDIS_KEY_IP_POOL, *ip_str)
             # save to legacy pool
             members = []

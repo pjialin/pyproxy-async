@@ -59,8 +59,7 @@ class IPChecker:
                 timeout=aiohttp.ClientTimeout(Config.DEFAULT_REQUEST_CHECK_TIME_OUT)) as session:
             ip = await self.http_check(ip, session)
             ip = await self.https_check(ip, session)
-            if ip.http:
-                ip = await self.rules_check(ip, session)
+            ip = await self.rules_check(ip, session)
             Logger.info('[check] Check result %s http %s https %s %s', ip.to_str(), ip.http, ip.https,
                         " ".join(["%s %s" % (k, r) for k, r in ip.rules.items()]))
         await IPSaver().save_ip(ip)
