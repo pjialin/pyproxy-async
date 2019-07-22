@@ -68,6 +68,9 @@ class IPSaver:
             await redis.zadd(Config.REDIS_KEY_IP_LEGACY_POOL, *members)
 
     async def dump_to_file(self):
+        from os import path, mkdir
+        if not path.isdir(Config.DUMPED_DIR):
+            mkdir(Config.DUMPED_DIR)
         with await Redis.share() as redis:
             members = await redis.zrangebyscore(Config.REDIS_KEY_IP_POOL, Config.DEFAULT_MINI_SCORE,
                                                 Config.DEFAULT_MAX_SCORE + Config.DEFAULT_INC_SCORE)

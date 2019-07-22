@@ -7,3 +7,4 @@ config.toml
 data/dumped/*
 data/prometheus/*
 docker-compose.yml
+*_test.py
