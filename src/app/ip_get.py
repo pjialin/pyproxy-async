@@ -52,7 +52,11 @@ class IPGet(ShareInstance):
     async def crawl_task(self):
         while True:
             Logger.debug('[get] crawl task loop')
-            await self.start_crawl()
+            try:
+                await self.start_crawl()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_LOOP_INTERVAL)
@@ -60,7 +64,11 @@ class IPGet(ShareInstance):
     async def check_legacy_task(self):
         while True:
             Logger.debug('[get] check legacy task loop')
-            await self.remove_legacy_ip()
+            try:
+                await self.remove_legacy_ip()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_LEGACY_IP_CHECK_INTERVAL)
@@ -68,7 +76,11 @@ class IPGet(ShareInstance):
     async def check_stats_task(self):
         while True:
             Logger.debug('[get] check stats task loop')
-            await self.running_stats()
+            try:
+                await self.running_stats()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_STATS_CHECK_INTERVAL)
@@ -78,9 +90,13 @@ class IPGet(ShareInstance):
         key = 'dump_to_file'
         while True:
             Logger.debug('[get] dump task loop')
-            if not await Redis.last_time_check(key, Config.DEFAULT_DUMP_IP_INTERVAL):
-                await Redis.save_last_time(key)
-                await IPSaver().dump_to_file()
+            try:
+                if not await Redis.last_time_check(key, Config.DEFAULT_DUMP_IP_INTERVAL):
+                    await Redis.save_last_time(key)
+                    await IPSaver().dump_to_file()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_DUMP_IP_INTERVAL)
@@ -135,7 +151,6 @@ class IPGet(ShareInstance):
                 key = Config.REDIS_KEY_ABLE_RULES
                 count = await redis.scard(key % rule.key)
                 Prometheus.up_status(key[:-3], count, rule.key)
-
 
     @classmethod
     async def push_to_pool(cls, ips):
@@ -262,6 +277,10 @@ class IPGet(ShareInstance):
         import random
         return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%d.0.3770.80 Safari/537.36' % random.randint(
             70, 76)
+
+    async def handle_task_exception(self, e):
+        Logger.error('[error] ' + str(e))
+        await asyncio.sleep(5)  #
 
 
 if __name__ == '__main__':

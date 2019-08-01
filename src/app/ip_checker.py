@@ -10,6 +10,7 @@ from src.lib.exceptions import ValidationFailException
 from src.lib.redis_lib import Redis
 from src.lib.structs import IPData, RuleData
 
+
 class IPChecker:
     NORMAL_CHECK_URL = 'http://httpbin.org/get'
 
@@ -25,14 +26,22 @@ class IPChecker:
     async def check_task(self):
         while True:
             Logger.debug('[check] check task loop')
-            await self.start_check()
+            try:
+                await self.start_check()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
 
     async def check_low_score_task(self):
         while True:
             Logger.debug('[check] check low score task loop')
-            await self.remove_low_score_ip()
+            try:
+                await self.remove_low_score_ip()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_CHECK_CLEAN_IP_INTERVAL)
@@ -41,9 +50,13 @@ class IPChecker:
         key = 'recheck_ip'
         while True:
             Logger.debug('[check] recheck ip task loop')
-            if not await Redis.last_time_check(key, Config.DEFAULT_CHECK_INTERVAL):
-                await Redis.save_last_time(key)
-                await self.resend_check_ip()
+            try:
+                if not await Redis.last_time_check(key, Config.DEFAULT_CHECK_INTERVAL):
+                    await Redis.save_last_time(key)
+                    await self.resend_check_ip()
+            except Exception as e:
+                await self.handle_task_exception(e)
+
             if Config.APP_ENV == Config.AppEnvType.TEST:
                 break
             await asyncio.sleep(Config.DEFAULT_CHECK_INTERVAL)
@@ -178,6 +191,10 @@ class IPChecker:
             await redis.sadd(Config.REDIS_KEY_CHECKED_POOL, *ips)
             Logger.info('[check] send %d ip to checked pools' % len(ips))
         return len(ips)
+
+    async def handle_task_exception(self, e):
+        Logger.error('[error] ' + str(e))
+        await asyncio.sleep(5)  #
 
 
 if __name__ == '__main__':
