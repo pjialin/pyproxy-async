@@ -80,7 +80,7 @@ class IPSaver:
                 file_name = 'ip_pool_%s.ip.txt' % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 with open(Config.DUMPED_DIR + file_name, 'w') as f:
                     f.write('\n'.join(members))
-                Logger.info('Dump %d ip to file %s' % (len(members, file_name)))
+                Logger.info('Dump %d ip to file %s' % (len(members), file_name))
         return True
 
     def get_delay_key(self, delay: float) -> str:

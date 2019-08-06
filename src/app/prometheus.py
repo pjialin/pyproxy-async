@@ -27,6 +27,7 @@ class Prometheus:
 
     @classmethod
     def up_status(cls, key: str, val: int, group=''):
+        label = ''
         if key.find(':'):
             label = key[key.rfind(':') + 1:]
         cls.IP_STATUS.labels(key=label, group=group).set(val)

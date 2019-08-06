@@ -58,8 +58,8 @@ docker run -d -v $(PWD)/config.toml:/code/config.toml -v pyproxy-data:/code/data
 # curl http://127.0.0.1:8080/get_ip  
 {"ip":"213.6.45.18","port":"39252","http":"http://213.6.45.18:39252"}
 
-# 支持过滤条件 https，如
-curl http://127.0.0.1:8080/get_ip?https=1
+# 支持过滤条件 https，rule 如
+curl http://127.0.0.1:8080/get_ip?https=1&rule=google
 ```
 
 ### 从文件或 Url 中加载已存在的 IP 列表

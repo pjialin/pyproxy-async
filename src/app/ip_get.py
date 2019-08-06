@@ -225,7 +225,7 @@ class IPGet(ShareInstance):
             if not self._test_model:
                 await self.save_parse_result(session, site, result)
             else:
-                await  self.show_result(session, site, result, resp=resp)
+                await self.show_result(session, site, result, resp=resp)
         except Exception as e:
             Logger.error('[get] Parse error, message: %s' % str(e))
 
