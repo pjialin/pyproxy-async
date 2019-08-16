@@ -66,7 +66,7 @@ class Config:
     DEFAULT_STATS_CHECK_INTERVAL = 10  # IP 数据统计间隔
 
     DEFAULT_REQUEST_TIME_OUT = 5
-    DEFAULT_REQUEST_CHECK_TIME_OUT = 3
+    DEFAULT_REQUEST_CHECK_TIME_OUT = 5
 
     # Rate
     RE_PUSH_TO_CHECK_POOL_RATE = 0.6  # 如果 总 IP 数量 > IP 池数量 * Rate  则跳过本次推送任务
